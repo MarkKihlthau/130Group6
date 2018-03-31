@@ -3,7 +3,7 @@
 <body>
 
 <?php
-echo "My first PHP script!";
+echo "This will run the SHA2.";
 ?>
 
 </body>

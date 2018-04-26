@@ -436,19 +436,18 @@ for ($int = 0; $int <= 79; $int = $int + 1)
 	$e1 = $d1;
 	$d1 = $c1;
 	$c1 = (rotate($b1, 30));
-	$b1 = $a;
+	$b1 = $a1;
 	$a1 = $temp;
-	
-	$h0 = decbin(bindec($h0) + bindec($a1));
-	$h1 = decbin(bindec($h1) + bindec($b1));
-	$h2 = decbin(bindec($h2) + bindec($c1));
-	$h3 = decbin(bindec($h3) + bindec($d1));
-	$h4 = decbin(bindec($h4) + bindec($e1));
+
+	$h0 = decbin(bindec($h0) + $a1);
+	$h1 = decbin(bindec($h1) + $b1);
+	$h2 = decbin(bindec($h2) + $c1);
+	$h3 = decbin(bindec($h3) + $d1);
+	$h4 = decbin(bindec($h4) + $e1);
 }
 
 //final hash!
-$hh = ((decbin(bindec($h0) << 128)) | (decbin(bindec($h1) << 96)) | (decbin(bindec($h2) << 64)) | (decbin(bindec($h3) << 32)) | $h4);
-//echo $hh;
-
+$hh = dechex(bindec($h0)) . dechex(bindec($h1)) . dechex(bindec($h2)) . dechex(bindec($h3)) . dechex(bindec($h4));
+echo $hh;
 
 ?>

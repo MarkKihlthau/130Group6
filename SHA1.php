@@ -1,6 +1,6 @@
 <?php
 $msg = "password";
-$encrypt;
+$encrypt = "";
 
 $len = strlen($msg);
 //echo substr($msg, 0, 1);
@@ -283,11 +283,112 @@ for ($int = 0; $int <= $len; $int++)
 
 //string now encoded in binary
 $encrypt = $encrypt . "1"; //append 1 bit
-$numk = 488 - strlen($encrypt);
+$numk = 447 - strlen($encrypt);
 for ($int = 0; $int <= $numk; $int++)
 {
   $encrypt = $encrypt . "0";
 }
 //echo $encrypt;
+
+//append 64-bit big endian length integer
+if ($len == 1)
+{
+	$encrypt = $encrypt . "0000000000000000000000000000000000000000000000000000000000000001";
+}
+if ($len == 2)
+{
+	$encrypt = $encrypt . "0000000000000000000000000000000000000000000000000000000000000010";
+}
+if ($len == 3)
+{
+	$encrypt = $encrypt . "0000000000000000000000000000000000000000000000000000000000000011";
+}
+if ($len == 4)
+{
+	$encrypt = $encrypt . "0000000000000000000000000000000000000000000000000000000000000100";
+}
+if ($len == 5)
+{
+	$encrypt = $encrypt . "0000000000000000000000000000000000000000000000000000000000000101";
+}
+if ($len == 6)
+{
+	$encrypt = $encrypt . "0000000000000000000000000000000000000000000000000000000000000110";
+}
+if ($len == 7)
+{
+	$encrypt = $encrypt . "0000000000000000000000000000000000000000000000000000000000000111";
+}
+if ($len == 8)
+{
+	$encrypt = $encrypt . "0000000000000000000000000000000000000000000000000000000000001000";
+}
+if ($len == 9)
+{
+	$encrypt = $encrypt . "0000000000000000000000000000000000000000000000000000000000001001";
+}
+if ($len == 10)
+{
+	$encrypt = $encrypt . "0000000000000000000000000000000000000000000000000000000000001010";
+}
+if ($len == 11)
+{
+	$encrypt = $encrypt . "0000000000000000000000000000000000000000000000000000000000001011";
+}
+if ($len == 12)
+{
+	$encrypt = $encrypt . "0000000000000000000000000000000000000000000000000000000000001100";
+}
+
+if ($len == 13)
+{
+	$encrypt = $encrypt . "0000000000000000000000000000000000000000000000000000000000001101";
+}
+if ($len == 14)
+{
+	$encrypt = $encrypt . "0000000000000000000000000000000000000000000000000000000000001110";
+}
+if ($len == 15)
+{
+	$encrypt = $encrypt . "0000000000000000000000000000000000000000000000000000000000001111";
+}
+if ($len == 16)
+{
+	$encrypt = $encrypt . "0000000000000000000000000000000000000000000000000000000000010000";
+}
+if ($len == 17)
+{
+	$encrypt = $encrypt . "0000000000000000000000000000000000000000000000000000000000010001";
+}
+if ($len == 18)
+{
+	$encrypt = $encrypt . "0000000000000000000000000000000000000000000000000000000000010010";
+}
+if ($len == 19)
+{
+	$encrypt = $encrypt . "0000000000000000000000000000000000000000000000000000000000010011";
+}
+if ($len == 20)
+{
+	$encrypt = $encrypt . "0000000000000000000000000000000000000000000000000000000000011000";
+}
+
+//echo $encrypt;
+
+//break into 32-bit chuncks
+$chunks = array(substr($encrypt, 0, 32), substr($encrypt, 32, 32), substr($encrypt, 64, 32), substr($encrypt, 96, 32), substr($encrypt, 128, 32), substr($encrypt, 160, 32),substr($encrypt, 192, 32), substr($encrypt, 224, 32), substr($encrypt, 256, 32), substr($encrypt, 288, 32), substr($encrypt, 320, 32), substr($encrypt, 352, 32), substr($encrypt, 384, 32), substr($encrypt, 416, 32), substr($encrypt, 448, 32), substr($encrypt, 480, 32), substr($encrypt, 512, 32));
+
+function rotate ($num, $bits)
+{
+	return(substr($num, $bits).substr($num, 0, $bits));
+}
+
+//for loop
+for ($int = 16; $int <= 79; $int = $int + 1)
+{
+	$chunks[$int] = ((($chunks[$int-3] ^ $chunks[$int-8]) ^ $chunks[$int-14]) ^ $chunks[$int-16]);
+	$chunks[$int] = rotate($chunks[$int], 1); //rotate one bit left
+}
+
 
 ?>

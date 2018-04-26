@@ -383,12 +383,72 @@ function rotate ($num, $bits)
 	return(substr($num, $bits).substr($num, 0, $bits));
 }
 
+function shift ($num, $bits)
+{
+	return(substr($num, $bits)."0");
+}
+
 //for loop
 for ($int = 16; $int <= 79; $int = $int + 1)
 {
 	$chunks[$int] = ((($chunks[$int-3] ^ $chunks[$int-8]) ^ $chunks[$int-14]) ^ $chunks[$int-16]);
 	$chunks[$int] = rotate($chunks[$int], 1); //rotate one bit left
 }
+
+//initialize hash values
+$h0 = "01100111010001010010001100000001";
+$h1 = "11101111110011011010101110001001";
+$h2 = "10011000101110101101110011111110";
+$h3 = "00010000001100100101010001110110";
+$h4 = "11000011110100101110000111110000";
+
+$a1 = $h0;
+$b1 = $h1;
+$c1 = $h2;
+$d1 = $h3;
+$e1 = $h4;
+
+//Main Loop:
+for ($int = 0; $int <= 79; $int = $int + 1)
+{
+	if ($int >= 0 || $int <= 19)
+	{
+		$f1 = ($b1 & $c1) | ((!$b1) & $d1);
+		$k1 = "01011010100000100111100110011001";
+	}
+	if ($int >= 20 || $int <= 39)
+	{
+		$f1 = $b1 ^ $c1 ^ $d1;
+		$k1 = "01101110110110011110101110100001";
+	}
+	if ($int >= 40 || $int <= 59)
+	{
+		$f1 = ($b1 & $c1) | ($b1 & $d1) | ($c1 & $d1);
+		$k1 = "10001111000110111011110011011100";
+	}
+	if ($int >= 60 || $int <= 79)
+	{
+		$f1 = $b1 ^ $c1 ^ $d1;
+		$k1 = "11001010011000101100000111010110";
+	}
+	
+	$temp = bindec(($a1 = rotate($a1, 5))) + bindec($f1) + bindec($e1) + bindec($k1) + bindec($chunks[$int]);
+	$e1 = $d1;
+	$d1 = $c1;
+	$c1 = (rotate($b1, 30));
+	$b1 = $a;
+	$a1 = $temp;
+	
+	$h0 = decbin(bindec($h0) + bindec($a1));
+	$h1 = decbin(bindec($h1) + bindec($b1));
+	$h2 = decbin(bindec($h2) + bindec($c1));
+	$h3 = decbin(bindec($h3) + bindec($d1));
+	$h4 = decbin(bindec($h4) + bindec($e1));
+}
+
+//final hash!
+$hh = ((decbin(bindec($h0) << 128)) | (decbin(bindec($h1) << 96)) | (decbin(bindec($h2) << 64)) | (decbin(bindec($h3) << 32)) | $h4);
+//echo $hh;
 
 
 ?>

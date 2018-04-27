@@ -1,5 +1,5 @@
 <?php
-$msg = "password";
+$msg = $_POST["password"];
 $encrypt = "";
 
 $len = strlen($msg);

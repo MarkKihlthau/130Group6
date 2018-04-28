@@ -1,10 +1,15 @@
-<!DOCTYPE html>
-<html>
-<body>
-
 <?php
-echo "This will be the simple hash.";
-?>
+$msg = "password";
+$encrypt = "";
 
-</body>
-</html>
+$len = strlen($msg);
+$encrypt = ord($msg);
+//echo $encrypt;
+
+//hash function
+$encrypt = ($encrypt % 20) + ord(substr($msg, $len, 1)) + 9;
+$hh = dechex($encrypt);
+
+//final hash!
+echo $hh;
+?>

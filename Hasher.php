@@ -1,5 +1,44 @@
+<html lang= "en-US">
+
+<body style="background-color:powderblue;">
+
 <?php
-$msg = $_POST["password"];
+
+if(empty($_POST['user']) || empty($_POST['pass'])){
+  echo "All fields are required!";
+  echo "<br>";echo "<br>";echo "<br>";echo "<br>";
+  echo "<a href =/indexMain.php>Register</a>";
+  echo "| <a href =/loginMain.php>Login</a>";
+
+    exit;
+}
+if(empty($_POST["hash"])) {
+  echo "Error, a bubble must be selected ";
+  echo "<br>";
+  echo "<a href =/indexMain.php>Return</a>";
+      exit;
+}
+
+
+//Simple Hash
+if($_POST['hash'] == 'SimH' || $_POST["hash"] == "Login"){
+$msg = $_POST["pass"];
+$encrypt = "";
+
+$len = strlen($msg);
+$encrypt = ord($msg);
+//echo $encrypt;
+
+//hash function
+$encrypt = ($encrypt % 20) + ord(substr($msg, $len, 1)) + 9;
+$hhS = dechex($encrypt);
+
+}
+
+//SHA-1
+if($_POST['hash'] == 'SHA1' || $_POST["hash"] == "Login"){
+$msg = $_POST["pass"];
+
 $encrypt = "";
 
 $len = strlen($msg);
@@ -448,6 +487,117 @@ for ($int = 0; $int <= 79; $int = $int + 1)
 
 //final hash!
 $hh = dechex(bindec($h0)) . dechex(bindec($h1)) . dechex(bindec($h2)) . dechex(bindec($h3)) . dechex(bindec($h4));
-echo $hh;
+$_POST['pass']  = $hh; 
+}
 
-?>
+
+//Register
+if(isset($_POST["hash"]) && $_POST["hash"] !== 'Login') {   
+if(!empty($_POST['user']) && !empty($_POST['pass'])) {  
+  if($_POST["hash"] == "SimH"){
+    $pass=$hhS;
+  }
+  else if($_POST["hash"] == "SHA1"){
+    $pass=$_POST['pass'];  
+  }
+  else{
+      echo "Error, a bubble wasn't selected";
+  }
+    $user=$_POST['user'];  
+    $con=mysqli_connect('localhost','root','') or die(mysqli_error());  
+    mysqli_select_db($con, 'practice') or die("cannot select DB");  
+  
+    $query=mysqli_query($con, "SELECT * FROM login WHERE username='".$user."'");  
+    $numrows=mysqli_num_rows($query);  
+    if($numrows==0)  
+    {  
+    $sql="INSERT INTO login(username,password) VALUES('$user','$pass')";  
+  
+    $result=mysqli_query($con, $sql);  
+        if($result){  
+    echo "Account Successfully Created";
+    echo "<br>";
+    echo "<a href =/indexMain.php>Return</a>";  
+    } else {  
+    echo "Failure!";  
+    }  
+  
+    } else {  
+    echo "That username already exists! Please try again with another."; 
+    echo "<br>";
+    echo "<a href =/indexMain.php>Return</a>"; 
+    }  
+  
+} else {  
+    echo "All fields are required!";
+    echo "<br>";
+    echo "<a href =/indexMain.php>Return</a>";
+  
+}  
+}
+//Login  
+else if(isset($_POST["hash"]) && $_POST["hash"] == 'Login'){  
+  if(!empty($_POST['user']) && !empty($_POST['pass'])) {  
+
+    $user=$_POST['user'];  
+    $pass=$_POST['pass']; 
+    $pas2=$hhS; 
+     
+  
+    $con=mysqli_connect('localhost','root','') or die(mysqli_error());  
+    mysqli_select_db($con, 'practice') or die("cannot select DB");  
+  
+    $query  =mysqli_query($con, "SELECT * FROM login WHERE username='".$user."' AND password='".$pass."'"); 
+    $numrows=mysqli_num_rows($query);
+    if($numrows!=0)  
+    {  
+    while($row=mysqli_fetch_assoc($query))  
+    {  
+    $dbusername=$row['username'];  
+    $dbpassword=$row['password'];  
+    }  
+    if($user == $dbusername && $pass == $dbpassword)  
+    {  
+    session_start();  
+    $_SESSION['sess_user']=$user;  
+  
+    /* Redirect browser */  
+    header("Location: member.php"); 
+    }  
+    }
+    $querySH  =mysqli_query($con, "SELECT * FROM login WHERE username='".$user."' AND password='".$pas2."'"); 
+    $numrowsSH=mysqli_num_rows($querySH);  
+    if($numrowsSH!=0)
+    {
+     while($row=mysqli_fetch_assoc($querySH))  
+    {  
+    $dbusername=$row['username'];    
+    $dbpassword=$row['password'];  
+    }
+    if($user == $dbusername && $pas2 == $dbpassword)  
+    {  
+    session_start();  
+    $_SESSION['sess_user']=$user;  
+  
+    /* Redirect browser */  
+    header("Location: member.php"); 
+    }
+    }
+    else {  
+    echo "Invalid username or password!";
+    echo "<br>";
+    echo "<a href =/loginMain.php>Return</a>";  
+    }  
+  
+} else {  
+    echo "All fields are required!";
+    echo "<br>";
+    echo "<a href =/loginMain.php>Return</a>";
+  
+}  
+}
+
+?> 
+<br>
+</body>
+</html>
